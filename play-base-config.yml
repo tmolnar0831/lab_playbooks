@@ -1,0 +1,52 @@
+---
+- name: Basic OS and user setup
+  hosts: all
+
+  tasks:
+  - name: Install the basic packages
+    ansible.builtin.apt:
+      name:
+        - vim
+        - tmux
+        - python3
+        - python3-apt
+        - sshpass
+        - git
+        - wget
+        - curl
+        - zsh
+      state: present
+    become_user: root
+
+  - name: Check out my dotfiles repository from Github
+    ansible.builtin.git:
+      repo: https://github.com/tmolnar0831/dotfiles.git
+      dest: /home/tmolnar/stuff/dotfiles
+
+  - name: Copy the config files to the root user
+    ansible.builtin.copy:
+      src: '{{ item.src }}'
+      dest: '{{ item.dest }}'
+      owner: root
+      group: root
+    loop:
+      - { src: /home/tmolnar/stuff/dotfiles/.vimrc, dest: /root/.vimrc }
+      - { src: /home/tmolnar/stuff/dotfiles/.tmux.conf, dest: /root/.tmux.conf }
+      - { src: /home/tmolnar/stuff/dotfiles/.zshrc, dest: /root/.zshrc }
+    become_user: root
+
+  - name: Copy the config files to my home
+    ansible.builtin.copy:
+      src: '{{ item.src }}'
+      dest: '{{ item.dest }}'
+      owner: tmolnar
+      group: tmolnar
+    loop:
+      - { src: /home/tmolnar/stuff/dotfiles/.vimrc, dest: /home/tmolnar/.vimrc }
+      - { src: /home/tmolnar/stuff/dotfiles/.tmux.conf, dest: /home/tmolnar/.tmux.conf }
+      - { src: /home/tmolnar/stuff/dotfiles/.zshrc, dest: /home/tmolnar/.zshrc }
+
+  - name: Change the user shell to zsh
+    ansible.builtin.user:
+      name: tmolnar
+      shell: /usr/bin/zsh

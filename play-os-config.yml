@@ -1,0 +1,9 @@
+---
+- name: Basic OS configuration on VMWARE
+  hosts: vmware
+  become_user: root
+
+  tasks:
+    - name: Set up the vm hostname
+      ansible.builtin.hostname:
+        name: "{{ vm_hostname }}"
