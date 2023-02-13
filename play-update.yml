@@ -1,12 +1,13 @@
 ---
 - name: Update the base OS
   hosts: all
+  become: true
   become_user: root
 
   tasks:
     - name: Update the package db cache
       ansible.builtin.apt:
-        update_cache: yes
+        update_cache: true
 
     - name: Upgrade the packages
       ansible.builtin.apt:
@@ -15,4 +16,4 @@
 
     - name: Remove the not required packages
       ansible.builtin.apt:
-        autoremove: yes
+        autoremove: true

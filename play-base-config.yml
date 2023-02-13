@@ -1,52 +1,59 @@
 ---
 - name: Basic OS and user setup
   hosts: all
+  become: true
+  become_user: root
 
   tasks:
-  - name: Install the basic packages
-    ansible.builtin.apt:
-      name:
-        - vim
-        - tmux
-        - python3
-        - python3-apt
-        - sshpass
-        - git
-        - wget
-        - curl
-        - zsh
-      state: present
-    become_user: root
+    - name: Install the basic packages
+      ansible.builtin.apt:
+        name:
+          - vim
+          - tmux
+          - python3
+          - python3-apt
+          - sshpass
+          - git
+          - wget
+          - curl
+          - zsh
+        state: present
 
-  - name: Check out my dotfiles repository from Github
-    ansible.builtin.git:
-      repo: https://github.com/tmolnar0831/dotfiles.git
-      dest: /home/tmolnar/stuff/dotfiles
+    - name: Check out my dotfiles repository from Github
+      ansible.builtin.git:
+        repo: https://github.com/tmolnar0831/dotfiles.git
+        dest: /home/tmolnar/stuff/dotfiles
+        version: 4bfbaa2917844a46ab936bddba5125af16c10bca
+      become_user: tmolnar
 
-  - name: Copy the config files to the root user
-    ansible.builtin.copy:
-      src: '{{ item.src }}'
-      dest: '{{ item.dest }}'
-      owner: root
-      group: root
-    loop:
-      - { src: /home/tmolnar/stuff/dotfiles/.vimrc, dest: /root/.vimrc }
-      - { src: /home/tmolnar/stuff/dotfiles/.tmux.conf, dest: /root/.tmux.conf }
-      - { src: /home/tmolnar/stuff/dotfiles/.zshrc, dest: /root/.zshrc }
-    become_user: root
+    - name: Copy the config files to the root user
+      ansible.builtin.copy:
+        src: '{{ item.src }}'
+        dest: '{{ item.dest }}'
+        owner: root
+        group: root
+        mode: '0754'
+        remote_src: true
+      loop:
+        - { src: /home/tmolnar/stuff/dotfiles/.vimrc, dest: /root/.vimrc }
+        - { src: /home/tmolnar/stuff/dotfiles/.tmux.conf, dest: /root/.tmux.conf }
+        - { src: /home/tmolnar/stuff/dotfiles/.zshrc, dest: /root/.zshrc }
 
-  - name: Copy the config files to my home
-    ansible.builtin.copy:
-      src: '{{ item.src }}'
-      dest: '{{ item.dest }}'
-      owner: tmolnar
-      group: tmolnar
-    loop:
-      - { src: /home/tmolnar/stuff/dotfiles/.vimrc, dest: /home/tmolnar/.vimrc }
-      - { src: /home/tmolnar/stuff/dotfiles/.tmux.conf, dest: /home/tmolnar/.tmux.conf }
-      - { src: /home/tmolnar/stuff/dotfiles/.zshrc, dest: /home/tmolnar/.zshrc }
+    - name: Copy the config files to my home
+      ansible.builtin.copy:
+        src: '{{ item.src }}'
+        dest: '{{ item.dest }}'
+        owner: tmolnar
+        group: tmolnar
+        mode: '0754'
+        remote_src: true
+      loop:
+        - { src: /home/tmolnar/stuff/dotfiles/.vimrc, dest: /home/tmolnar/.vimrc }
+        - { src: /home/tmolnar/stuff/dotfiles/.tmux.conf, dest: /home/tmolnar/.tmux.conf }
+        - { src: /home/tmolnar/stuff/dotfiles/.zshrc, dest: /home/tmolnar/.zshrc }
+      become_user: tmolnar
 
-  - name: Change the user shell to zsh
-    ansible.builtin.user:
-      name: tmolnar
-      shell: /usr/bin/zsh
+    - name: Change the user shell to zsh
+      ansible.builtin.user:
+        name: tmolnar
+        shell: /usr/bin/zsh
