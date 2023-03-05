@@ -1,0 +1,7 @@
+---
+- name: Install the Docker Engine on the system
+  hosts: all
+  become: true
+  become_user: root
+  roles:
+    - docker_engine
