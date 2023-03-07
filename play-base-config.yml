@@ -57,3 +57,8 @@
       ansible.builtin.user:
         name: tmolnar
         shell: /usr/bin/zsh
+
+    - name: Change the root shell to zsh
+      ansible.builtin.user:
+        name: root
+        shell: /usr/bin/zsh
