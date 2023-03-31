@@ -1,0 +1,7 @@
+---
+- name: Install Hashicorp Vault on the system
+  hosts: all
+  become: true
+  become_user: root
+  roles:
+    - hashicorp_vault
