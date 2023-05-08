@@ -1,0 +1,10 @@
+---
+- name: Shut down the running virtual machines
+  hosts: all
+  become: true
+  become_user: root
+  timeout: 15
+
+  tasks:
+    - name: Run the suhutdown task
+      ansible.builtin.command: /sbin/shutdown -h now
