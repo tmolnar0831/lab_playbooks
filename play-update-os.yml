@@ -1,0 +1,16 @@
+---
+- name: Update and Upgrade the OS
+  hosts: all
+  become: true
+
+  tasks:
+    - name: Update apt cache
+      ansible.builtin.apt:
+        update_cache: true
+
+    - name: Upgrade OS packages
+      ansible.builtin.apt:
+        upgrade: dist
+        autoremove: true
+        autoclean: true
+        force_apt_get: true
